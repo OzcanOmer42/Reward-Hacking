@@ -1,4 +1,29 @@
 {
-  "_readme": "USD per million tokens. Every entry needs source + verified_on. AnthropicModel refuses model ids missing from this table. Empty on purpose: no real model has been chosen or run yet.",
-  "models": {}
+  "_readme": "USD per million tokens. Every entry needs source + verified_on. AnthropicModel refuses model ids missing from this table.",
+  "models": {
+    "claude-sonnet-5": {
+      "input": 2.0,
+      "output": 10.0,
+      "cache_read": 0.2,
+      "source": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "verified_on": "2026-09-17",
+      "id_note": "pinned snapshot per https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions"
+    },
+    "claude-haiku-4-5-20251001": {
+      "input": 1.0,
+      "output": 5.0,
+      "cache_read": 0.1,
+      "source": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "verified_on": "2026-09-17",
+      "id_note": "dated snapshot; the alias claude-haiku-4-5 is a moving pointer, do not use it"
+    },
+    "claude-opus-5": {
+      "input": 5.0,
+      "output": 25.0,
+      "cache_read": 0.5,
+      "source": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "verified_on": "2026-09-17",
+      "id_note": "pinned snapshot per the model-ids-and-versions page"
+    }
+  }
 }

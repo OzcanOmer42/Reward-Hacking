@@ -80,7 +80,7 @@ class AnthropicModel:
     provider = "anthropic"
 
     def __init__(self, model_id: str, max_tokens: int = 2048,
-                 temperature: float | None = 1.0, client: Any = None,
+                 temperature: float | None = None, client: Any = None,
                  prices_path: str = PRICES_PATH):
         if model_id.endswith("-latest"):
             raise ValueError("aliases are not allowed; pin a snapshot id")
@@ -94,8 +94,13 @@ class AnthropicModel:
         self._price = table[model_id]
         self.model_id = model_id
         self.params = {"max_tokens": max_tokens}
+        # None = do not send the parameter, so the API default applies. Some newer
+        # models reject explicit sampling parameters; the header records which it was.
         if temperature is not None:
             self.params["temperature"] = temperature
+        self._sent = {k: v for k, v in self.params.items()}
+        if temperature is None:
+            self.params["temperature"] = "api_default"
         if client is None:
             import anthropic  # lazy: tests and scripted runs do not need the SDK
             client = anthropic.Anthropic()
@@ -149,7 +154,7 @@ class AnthropicModel:
             model=self.model_id, system=system, messages=self._wire(messages),
             tools=[{"name": t.name, "description": t.description,
                     "input_schema": t.parameters} for t in tools],
-            **self.params,
+            **self._sent,
         )
         text, calls = [], []
         for b in resp.content:

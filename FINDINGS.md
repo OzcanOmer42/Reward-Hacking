@@ -103,3 +103,7 @@ what pattern of results means "there is no effect".
 - Built: runner, scripted agents (honest, exploit_only, both, garbage), sandbox_score at
   L1 to L5, Anthropic adapter (tested against a fake client only; never called the API).
 - 42 tests pass. API spend: $0.
+- Later the same session: added verified prices for three Claude models; the Anthropic adapter
+  no longer sends an explicit temperature (API default applies, header records
+  `"temperature": "api_default"`), because some newer models reject sampling parameters and
+  the adapter has not been run against the live API yet. Still $0 spent.
