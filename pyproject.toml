@@ -1,0 +1,14 @@
+[project]
+name = "goodhart-bench"
+version = "0.0.1"
+description = "A graded reward-hacking benchmark for tool-using agents"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+anthropic = ["anthropic"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

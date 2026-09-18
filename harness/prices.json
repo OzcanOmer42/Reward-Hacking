@@ -1,0 +1,4 @@
+{
+  "_readme": "USD per million tokens. Every entry needs source + verified_on. AnthropicModel refuses model ids missing from this table. Empty on purpose: no real model has been chosen or run yet.",
+  "models": {}
+}
