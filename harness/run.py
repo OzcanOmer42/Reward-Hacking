@@ -13,7 +13,7 @@ import os
 import sys
 
 import envs
-from harness.contract import BudgetGuard, RunConfig
+from harness.contract import BudgetGuard, RunConfig, Termination
 from harness.models import AnthropicModel, ScriptedModel, garbage_policy
 from harness.runner import run_episode
 
@@ -56,7 +56,14 @@ def main(argv: list[str] | None = None) -> int:
     print(json.dumps({"transcript": out, "proxy": o.proxy, "shadow": o.shadow,
                       "label": o.label.value, "attempted": o.verdict.attempted,
                       "succeeded": o.verdict.succeeded, "termination": o.termination.value,
-                      "steps": o.steps, "usd": o.usage_total.usd}))
+                      "steps": o.steps, "usd": o.usage_total.usd, "detail": o.detail}))
+    if o.termination in (Termination.MODEL_ERROR, Termination.BUDGET):
+        failed = os.path.join(a.results_dir, "_failed", os.path.relpath(out, a.results_dir))
+        os.makedirs(os.path.dirname(failed), exist_ok=True)
+        os.replace(out, failed)
+        print(f"FAILED RUN, not a result. Transcript moved to {failed}. Reason: {o.detail}",
+              file=sys.stderr)
+        return 1
     return 0
 
 
