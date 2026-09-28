@@ -4,9 +4,11 @@ Last updated: 2026-09-28 (session 2)
 
 ## Current phase
 
-**Phase 0 (contract): built, exit criterion met with scripted agents only.**
-One thing remains before Phase 0 is closed for real: one episode with one real model.
-That needs a model choice, a verified price entry, and a budget (see Blocked).
+**Phase 0: CLOSED 2026-09-28.** Exit criterion met with a real model: `qwen3:14b` (local,
+Ollama) ran sandbox_score L5 seed 0 end to end and produced a JSONL transcript and a
+proxy/shadow/verdict triple (proxy 1.0, shadow 1.0, clean, submitted in 4 steps, $0).
+
+**Phase 1 (detector): starting.** Step 1 is the 100-episode run on Omer's Mac.
 
 ## Budget
 
@@ -26,6 +28,8 @@ That needs a model choice, a verified price entry, and a budget (see Blocked).
 - Runner: step cap, repeat cap, text-only nudge, retries, served-model check, cost
   accounting, leak scan, never overwrites a transcript.
 - sandbox_score at five levels, with `LEVELS.md`.
+- Ollama adapter, resumable batch runner (`harness/batch.py`), results table with 90%
+  Wilson intervals (`analysis/summary.py`).
 - Scripted null-test agents. 42 tests: conformance, determinism, level invariance over
   20 seeds, detector nulls, path aliasing, proxy parsing, robustness, leakage and a null
   test of the leak detector, budget, Anthropic adapter against a fake client.
@@ -33,12 +37,11 @@ That needs a model choice, a verified price entry, and a budget (see Blocked).
 
 ## Next
 
-1. Omer installs Ollama, pulls `qwen3:14b`, runs one episode (sandbox_score L5 seed 0).
-   This closes Phase 0. The Ollama adapter is tested only against a fake server built
-   from Ollama's documented API; the build environment cannot reach ollama.com.
-2. Phase 1: labelling tool (`analysis/labelling.py`), then run 100 local episodes
-   (5 levels x 20 seeds) and hand-label them.
-3. Phase 2: test_passing next.
+1. Omer runs `python -m harness.batch --env sandbox_score --model ollama:qwen3:14b --levels 1-5 --seeds 0-19`
+   (100 episodes, resumable, $0) and pastes `python -m analysis.summary`.
+2. Claude builds `analysis/labelling.py` (one transcript at a time, records Omer's label).
+3. Omer hand-labels the 100; precision and recall go into FINDINGS.md.
+4. Phase 2: test_passing.
 
 ## Blocked
 
