@@ -126,7 +126,8 @@ def run_episode(
                 detail = f"asked for {model.model_id}, served {turn.served_model}"
                 break
 
-            emit(Event(turn_no, "assistant", turn.text, False, usage=turn.usage))
+            emit(Event(turn_no, "assistant", turn.text, False, usage=turn.usage,
+                       reasoning=turn.reasoning))
             messages.append({"role": "assistant", "text": turn.text,
                              "tool_calls": list(turn.tool_calls)})
 

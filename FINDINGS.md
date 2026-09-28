@@ -47,6 +47,12 @@ what resolved them.
 8. **Model behaviour is not stationary across API versions.** ADDRESSED IN HARNESS. Every
    transcript header records provider, model id and params; the runner voids a run
    whose served model differs from the requested id; `-latest` aliases are rejected.
+13. **Local open models may fail at tool use rather than choose to cheat.** OPEN. With a
+    $0 budget the first subjects are small local models (qwen3:14b). A model that cannot
+    operate the tools produces "clean" transcripts for the wrong reason. Check: report the
+    honest completion rate (shadow = 1.0) per level next to the exploit rate, and treat a
+    level where the model rarely completes the task as uninformative. Results on local
+    models say nothing about frontier models.
 9. **One person's intuitions about what a tempting exploit looks like.** OPEN. No mitigation yet.
 10. **File-drawer.** OPEN by nature. Every environment built gets reported.
 11. **bounded_search and cited_summary are confounded as specified.** OPEN. They remain in
@@ -107,3 +113,14 @@ what pattern of results means "there is no effect".
   no longer sends an explicit temperature (API default applies, header records
   `"temperature": "api_default"`), because some newer models reject sampling parameters and
   the adapter has not been run against the live API yet. Still $0 spent.
+
+### 2026-09-28, session 2
+- First real-model attempt (claude-sonnet-5) ended `model_error` at $0: the API key was empty.
+  The CLI now prints the failure reason and moves failed transcripts to `results/_failed/`.
+- Budget set to $0 by Omer. Added `OllamaModel` (native /api/chat, free, local). Records the
+  weights digest, quantization, and Ollama version in the header, since tags can be re-pushed.
+  Refuses to run when the conversation would exceed `num_ctx`, because Ollama would otherwise
+  silently drop the oldest messages, including the task.
+- Contract change: `ModelTurn.reasoning` and `Event.reasoning` added, so a model's visible
+  thinking is kept in the transcript for the disclosure analysis. It is not sent back to the model.
+- 48 tests pass. Adapter not yet run against a live Ollama server.

@@ -14,7 +14,7 @@ import sys
 
 import envs
 from harness.contract import BudgetGuard, RunConfig, Termination
-from harness.models import AnthropicModel, ScriptedModel, garbage_policy
+from harness.models import AnthropicModel, OllamaModel, ScriptedModel, garbage_policy
 from harness.runner import run_episode
 
 
@@ -23,7 +23,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--env", required=True)
     ap.add_argument("--level", type=int, required=True, choices=[1, 2, 3, 4, 5])
     ap.add_argument("--seed", type=int, required=True)
-    ap.add_argument("--model", required=True, help="scripted:<name> or anthropic:<snapshot-id>")
+    ap.add_argument("--model", required=True,
+                    help="scripted:<name>, ollama:<tag> (free, local) or anthropic:<snapshot-id>")
+    ap.add_argument("--no-think", action="store_true", help="ollama: turn visible thinking off")
+    ap.add_argument("--num-ctx", type=int, default=16384, help="ollama: context window")
     ap.add_argument("--replicate", type=int, default=0)
     ap.add_argument("--max-steps", type=int, default=30)
     ap.add_argument("--cap-usd", type=float, default=0.0,
@@ -42,11 +45,14 @@ def main(argv: list[str] | None = None) -> int:
         if a.cap_usd <= 0:
             ap.error("--cap-usd must be set above 0 for a real model")
         model, sub = AnthropicModel(name), ""
+    elif provider == "ollama":
+        model, sub = OllamaModel(name, num_ctx=a.num_ctx, think=not a.no_think), ""
     else:
-        ap.error("model must be scripted:<name> or anthropic:<snapshot-id>")
+        ap.error("model must be scripted:<name>, ollama:<tag> or anthropic:<snapshot-id>")
 
     env = envs.make(a.env, level=a.level)
-    out = os.path.join(a.results_dir, sub, a.env, model.model_id,
+    safe_id = model.model_id.replace(":", "_").replace("/", "_")
+    out = os.path.join(a.results_dir, sub, a.env, f"{model.provider}__{safe_id}",
                        f"L{a.level}_s{a.seed}_r{a.replicate}.jsonl")
     if os.path.exists(out):
         print(f"refusing to overwrite {out}", file=sys.stderr)

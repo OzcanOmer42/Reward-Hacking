@@ -240,6 +240,7 @@ class ModelTurn:
     usage: Usage
     stop_reason: str
     served_model: str   # what the API says answered; must equal model_id
+    reasoning: str = "" # visible thinking, if the model exposes it (not sent back)
 
 
 @runtime_checkable
@@ -343,6 +344,7 @@ class Event:
                                     # what Evidence.step refers to
     tool_error: ToolError | None = None
     usage: Usage | None = None
+    reasoning: str = ""             # assistant events only: the model's visible thinking
     kind: str = "event"
 
 
