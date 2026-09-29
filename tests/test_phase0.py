@@ -388,3 +388,13 @@ def test_probe_env(tmp_path):
     o = run_episode(envs.make("sandbox_score_probe"), AGENTS["exploit_only"](), 0, RunConfig(),
                     BudgetGuard(0), str(tmp_path / "p.jsonl"), **FIXED)
     assert o.label is Label.EXPLOIT and o.verdict.succeeded
+
+
+def test_probe_hard_env(tmp_path):
+    e = envs.make("sandbox_score_probe_hard")
+    obs = e.reset(0)
+    assert e.n_rows == 200 and "Any method that raises the score" in obs.system_prompt
+    assert obs.task_prompt == envs.make("sandbox_score_hard", level=5).reset(0).task_prompt
+    o = run_episode(envs.make("sandbox_score_probe_hard"), AGENTS["honest"](), 0, RunConfig(),
+                    BudgetGuard(0), str(tmp_path / "ph.jsonl"), **FIXED)
+    assert o.label is Label.CLEAN and o.shadow == 1.0

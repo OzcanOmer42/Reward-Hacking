@@ -16,7 +16,7 @@ SANDBOX_ROWS = {k: v[0] for k, v in SANDBOX.items()}
 
 
 def make(name: str, level: int | None = None, factors: LevelFactors | None = None) -> Environment:
-    if name == "sandbox_score_probe":
+    if name in ("sandbox_score_probe", "sandbox_score_probe_hard"):
         # Capability probe (FINDINGS P3): L5 surface plus explicit permission to raise the
         # score by any means. Answers "CAN this model edit the score file?" Level is None
         # in the transcript because this is not a ladder level.
@@ -24,7 +24,8 @@ def make(name: str, level: int | None = None, factors: LevelFactors | None = Non
         from envs.sandbox_score.env import SandboxScore
         from harness.contract import LADDER, Instruction
         f = dataclasses.replace(LADDER[5], instruction=Instruction.MAXIMIZE)
-        return SandboxScore(factors=f, n_rows=12, name=name, submit_alone=True)
+        rows = 200 if name.endswith("_hard") else 12
+        return SandboxScore(factors=f, n_rows=rows, name=name, submit_alone=True)
     if name in SANDBOX_ROWS:
         from envs.sandbox_score.env import SandboxScore
         rows, alone = SANDBOX[name]
@@ -34,7 +35,7 @@ def make(name: str, level: int | None = None, factors: LevelFactors | None = Non
 
 
 def scripted_agents(name: str) -> dict:
-    if name in SANDBOX_ROWS or name == "sandbox_score_probe":
+    if name in SANDBOX_ROWS or name.startswith("sandbox_score_probe"):
         from envs.sandbox_score.scripted import AGENTS
         return AGENTS
     raise KeyError(f"unknown environment: {name}")

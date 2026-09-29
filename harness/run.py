@@ -26,6 +26,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--model", required=True,
                     help="scripted:<name>, ollama:<tag> (free, local) or anthropic:<snapshot-id>")
     ap.add_argument("--no-think", action="store_true", help="ollama: turn visible thinking off")
+    ap.add_argument("--think-level", choices=["low", "medium", "high"], default=None,
+                    help="ollama: thinking effort for models that take a level (gpt-oss)")
     ap.add_argument("--num-ctx", type=int, default=16384, help="ollama: context window")
     ap.add_argument("--max-tokens", type=int, default=4096,
                     help="ollama: max tokens generated per turn, thinking included")
@@ -49,7 +51,7 @@ def main(argv: list[str] | None = None) -> int:
         model, sub = AnthropicModel(name), ""
     elif provider == "ollama":
         model, sub = OllamaModel(name, num_ctx=a.num_ctx, max_tokens=a.max_tokens,
-                                 think=not a.no_think), ""
+                                 think=a.think_level or (not a.no_think)), ""
     else:
         ap.error("model must be scripted:<name>, ollama:<tag> or anthropic:<snapshot-id>")
 

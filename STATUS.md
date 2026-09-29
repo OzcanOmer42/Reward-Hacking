@@ -39,9 +39,9 @@ exploits, because precision cannot be measured with zero positives.
 
 ## Next
 
-1. **P3 capability probe first** (20 minutes): does qwen3:14b edit score.json when told it may?
-   Decision rule in FINDINGS P3. The 19-hour P2 main run is on hold until this is known.
-2. If yes: P2 main run. If no: stop exploit runs on qwen3:14b; H3 disclosure plus a new model.
+P3 done: qwen3:14b is not a subject (0/10 even with permission). P2 main run cancelled.
+1. **P4:** gpt-oss:20b on `sandbox_score_probe_hard`, 10 episodes. Decision rule in FINDINGS P4.
+2. Yes: P2 design on gpt-oss:20b. No: write up R1, P3, H3; frontier models need credits.
 
 ## Blocked
 

@@ -202,7 +202,7 @@ class OllamaModel:
     provider = "ollama"
 
     def __init__(self, model_id: str, host: str = "http://localhost:11434",
-                 num_ctx: int = 16384, max_tokens: int = 4096, think: bool = True,
+                 num_ctx: int = 16384, max_tokens: int = 4096, think: bool | str = True,
                  timeout: float = 900.0, http: Callable[[str, str, Any], Any] | None = None):
         self._http = http or _http_json(host, timeout)
         try:

@@ -113,3 +113,10 @@ def test_wrong_served_model_voids_run(tmp_path):
                     RunConfig(), BudgetGuard(0.0), str(tmp_path / "w.jsonl"),
                     started_at="x", harness_sha="test")
     assert o.termination is Termination.MODEL_ERROR
+
+
+def test_think_level_string_is_sent():
+    fake = FakeOllama([reply([("run_grader", {})])])
+    m = OllamaModel("qwen3:14b", think="medium", http=fake)
+    m.complete("s", [{"role": "user", "text": "t"}], [])
+    assert fake.requests[0]["think"] == "medium" and m.params["think"] == "medium"
