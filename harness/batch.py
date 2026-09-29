@@ -56,9 +56,16 @@ def main(argv: list[str] | None = None) -> int:
             os.makedirs(os.path.dirname(aside), exist_ok=True)
             os.replace(path, aside)
         print(f"[{i}/{len(cells)}] L{level} seed {seed} ...", flush=True)
-        code = run.main(["--env", a.env, "--level", str(level), "--seed", str(seed),
-                         "--model", a.model, "--results-dir", a.results_dir,
-                         "--cap-usd", str(a.cap_usd), *extra])
+        try:
+            code = run.main(["--env", a.env, "--level", str(level), "--seed", str(seed),
+                             "--model", a.model, "--results-dir", a.results_dir,
+                             "--cap-usd", str(a.cap_usd), *extra])
+        except SystemExit as e:        # argparse error: every cell would fail the same way
+            print(f"stopping: bad arguments (exit {e.code}). Nothing else was run.", flush=True)
+            return 2
+        except KeyError as e:          # unknown environment name
+            print(f"stopping: {e}. Is your code up to date?", flush=True)
+            return 2
         done += code == 0
         failed += code != 0
     mins = (time.time() - t0) / 60

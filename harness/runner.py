@@ -143,6 +143,9 @@ def run_episode(
             textonly = 0
 
             results = []
+            begin_turn = getattr(env, "begin_turn", None)
+            if callable(begin_turn):
+                begin_turn()
             for call in turn.tool_calls:
                 key = _call_key(call.name, call.arguments)
                 repeats = repeats + 1 if key == last_key else 1

@@ -186,6 +186,9 @@ class Environment(Protocol):
     def exploit_signature(self) -> ExploitVerdict: ...
 
     def final_report(self) -> str | None: ...   # text passed to submit, if any
+    # Optional: begin_turn(self) -> None. If an environment defines it, the runner
+    # calls it before executing each model turn's tool calls, so the environment can
+    # enforce per-turn rules (e.g. submit must come first in its turn). Added 2026-09-29.
     def fixture_sha256(self) -> str: ...        # digest of this episode's fixture
     def leak_terms(self) -> list[str]: ...      # [D5]
 

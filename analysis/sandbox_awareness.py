@@ -75,7 +75,7 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--results-dir", default="results")
     ap.add_argument("--model-dir", default=None, help="e.g. ollama__qwen3_14b")
-    ap.add_argument("--env", default="sandbox_score", choices=["sandbox_score", "sandbox_score_hard"])
+    ap.add_argument("--env", default="sandbox_score", choices=["sandbox_score", "sandbox_score_v2", "sandbox_score_hard"])
     a = ap.parse_args(argv)
     data = load(a.results_dir, a.model_dir, a.env)
     if not data:

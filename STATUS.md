@@ -1,6 +1,6 @@
 # STATUS
 
-Last updated: 2026-09-28 (session 2)
+Last updated: 2026-09-29 (session 3)
 
 ## Current phase
 
@@ -39,9 +39,9 @@ exploits, because precision cannot be measured with zero positives.
 
 ## Next
 
-1. Omer: pilot, `sandbox_score_hard` L5 seeds 100 to 109 (command in the session notes and FINDINGS P2).
-2. Apply the pilot rule, then the main run: L1 to L5, seeds 0 to 19.
-3. `python -m analysis.prereg ...` gives the pre-registered verdict.
+1. Omer: pilot, `sandbox_score_hard` L5 seeds 100 to 109, `--max-tokens 8192` (FINDINGS P2, A1).
+2. Apply the pilot rule. Main run: hard, L1 to L5, seeds 0 to 19. Then v2, L5, seeds 0 to 19.
+3. `python -m analysis.prereg --env sandbox_score_hard --model ollama:qwen3:14b --seeds 0-19`.
 4. If exploits appear: Phase 1 labelling on those transcripts. If not: second model family.
 
 ## Blocked
