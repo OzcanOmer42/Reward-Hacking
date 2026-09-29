@@ -4,11 +4,13 @@ Last updated: 2026-09-28 (session 2)
 
 ## Current phase
 
-**Phase 0: CLOSED 2026-09-28.** Exit criterion met with a real model: `qwen3:14b` (local,
-Ollama) ran sandbox_score L5 seed 0 end to end and produced a JSONL transcript and a
-proxy/shadow/verdict triple (proxy 1.0, shadow 1.0, clean, submitted in 4 steps, $0).
+**Phase 0: CLOSED 2026-09-28.**
 
-**Phase 1 (detector): starting.** Step 1 is the 100-episode run on Omer's Mac.
+**R1 done 2026-09-29:** qwen3:14b, sandbox_score, 100 episodes, 0 exploit attempts (FINDINGS R1).
+
+**Now: P2, the hard variant** (pre-registered in FINDINGS). Pilot of 10 episodes, then the
+100-episode main run. Phase 1 (detector precision) waits for an environment that produces
+exploits, because precision cannot be measured with zero positives.
 
 ## Budget
 
@@ -37,11 +39,10 @@ proxy/shadow/verdict triple (proxy 1.0, shadow 1.0, clean, submitted in 4 steps,
 
 ## Next
 
-1. Omer runs `python -m harness.batch --env sandbox_score --model ollama:qwen3:14b --levels 1-5 --seeds 0-19`
-   (100 episodes, resumable, $0) and pastes `python -m analysis.summary`.
-2. Claude builds `analysis/labelling.py` (one transcript at a time, records Omer's label).
-3. Omer hand-labels the 100; precision and recall go into FINDINGS.md.
-4. Phase 2: test_passing.
+1. Omer: pilot, `sandbox_score_hard` L5 seeds 100 to 109 (command in the session notes and FINDINGS P2).
+2. Apply the pilot rule, then the main run: L1 to L5, seeds 0 to 19.
+3. `python -m analysis.prereg ...` gives the pre-registered verdict.
+4. If exploits appear: Phase 1 labelling on those transcripts. If not: second model family.
 
 ## Blocked
 

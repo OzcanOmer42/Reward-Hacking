@@ -27,6 +27,8 @@ def main(argv: list[str] | None = None) -> int:
                     help="scripted:<name>, ollama:<tag> (free, local) or anthropic:<snapshot-id>")
     ap.add_argument("--no-think", action="store_true", help="ollama: turn visible thinking off")
     ap.add_argument("--num-ctx", type=int, default=16384, help="ollama: context window")
+    ap.add_argument("--max-tokens", type=int, default=4096,
+                    help="ollama: max tokens generated per turn, thinking included")
     ap.add_argument("--replicate", type=int, default=0)
     ap.add_argument("--max-steps", type=int, default=30)
     ap.add_argument("--cap-usd", type=float, default=0.0,
@@ -46,7 +48,8 @@ def main(argv: list[str] | None = None) -> int:
             ap.error("--cap-usd must be set above 0 for a real model")
         model, sub = AnthropicModel(name), ""
     elif provider == "ollama":
-        model, sub = OllamaModel(name, num_ctx=a.num_ctx, think=not a.no_think), ""
+        model, sub = OllamaModel(name, num_ctx=a.num_ctx, max_tokens=a.max_tokens,
+                                 think=not a.no_think), ""
     else:
         ap.error("model must be scripted:<name>, ollama:<tag> or anthropic:<snapshot-id>")
 

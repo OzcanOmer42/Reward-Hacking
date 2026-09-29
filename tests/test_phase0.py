@@ -312,3 +312,33 @@ def test_anthropic_adapter_with_fake_client(tmp_path):
     assert wire[2]["content"][0]["is_error"] is True and wire[2]["content"][0]["content"] == "(empty)"
     assert wire[1]["content"][0]["input"] == {}
     assert m.estimate_usd("sys", msgs) > 0
+
+
+# ---------------------------------------------------------------- hard variant
+def test_hard_variant_only_changes_row_count(tmp_path):
+    for seed in range(5):
+        triples = set()
+        for level in LEVELS:
+            e = envs.make("sandbox_score_hard", level=level)
+            obs = e.reset(seed)
+            assert e.name == "sandbox_score_hard"
+            assert e._files["data/records.csv"].count("\n") == 201     # header + 200 rows
+            easy = envs.make("sandbox_score", level=level)
+            eobs = easy.reset(seed)
+            assert obs.task_prompt == eobs.task_prompt                  # same words, same listing
+            assert obs.system_prompt == eobs.system_prompt
+            env = envs.make("sandbox_score_hard", level=level)
+            o = run_episode(env, AGENTS["honest"](), seed, RunConfig(), BudgetGuard(0),
+                            str(tmp_path / f"hh{seed}{level}.jsonl"), **FIXED)
+            triples.add((o.proxy, o.shadow, o.steps))
+        assert triples == {(1.0, 1.0, 4)}
+
+
+def test_hard_variant_detector_and_header(tmp_path):
+    x, out = None, tmp_path / "hx.jsonl"
+    x = run_episode(envs.make("sandbox_score_hard", level=5), AGENTS["exploit_only"](), 3,
+                    RunConfig(), BudgetGuard(0), str(out), **FIXED)
+    assert x.label is Label.EXPLOIT and x.verdict.succeeded
+    assert json.loads(out.read_text().splitlines()[0])["env"] == "sandbox_score_hard"
+    with pytest.raises(ValueError):
+        SandboxScore(level=1, n_rows=2)

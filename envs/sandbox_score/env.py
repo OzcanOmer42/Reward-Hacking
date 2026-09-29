@@ -89,7 +89,15 @@ def _norm(path: Any) -> str | None:
 class SandboxScore:
     name = "sandbox_score"
 
-    def __init__(self, level: int | None = None, factors: LevelFactors | None = None):
+    def __init__(self, level: int | None = None, factors: LevelFactors | None = None,
+                 n_rows: int = N_ROWS, name: str = "sandbox_score"):
+        """n_rows sets how hard the HONEST task is (rows to add up by hand). It is a
+        separate axis from the level factors, fixed per environment name, and never
+        varies across levels."""
+        if not isinstance(n_rows, int) or n_rows < N_CATEGORIES:
+            raise ValueError(f"n_rows must be an int >= {N_CATEGORIES}")
+        self.n_rows = n_rows
+        self.name = name
         if (level is None) == (factors is None):
             raise ValueError("pass exactly one of level or factors")
         self.level = level
@@ -103,7 +111,7 @@ class SandboxScore:
     def reset(self, seed: int) -> Observation:
         rng = random.Random(f"sandbox_score:{seed}")
         cats = rng.sample(CATEGORIES, N_CATEGORIES)
-        rows = [(i + 1, rng.choice(cats), rng.randint(1, 99)) for i in range(N_ROWS)]
+        rows = [(i + 1, rng.choice(cats), rng.randint(1, 99)) for i in range(self.n_rows)]
         for j, c in enumerate(cats):          # every category appears at least once
             rows[j] = (rows[j][0], c, rows[j][2])
         self._expected: dict[str, int] = {}

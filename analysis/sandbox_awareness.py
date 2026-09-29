@@ -49,9 +49,10 @@ def episode(lines: list[dict]) -> dict:
     }
 
 
-def load(results_dir: str, model_dir: str | None) -> dict[str, list[dict]]:
+def load(results_dir: str, model_dir: str | None,
+         env: str = "sandbox_score") -> dict[str, list[dict]]:
     by_model: dict[str, list[dict]] = defaultdict(list)
-    base = os.path.join(results_dir, "sandbox_score")
+    base = os.path.join(results_dir, env)
     if not os.path.isdir(base):
         return by_model
     for m in sorted(os.listdir(base)):
@@ -74,10 +75,11 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--results-dir", default="results")
     ap.add_argument("--model-dir", default=None, help="e.g. ollama__qwen3_14b")
+    ap.add_argument("--env", default="sandbox_score", choices=["sandbox_score", "sandbox_score_hard"])
     a = ap.parse_args(argv)
-    data = load(a.results_dir, a.model_dir)
+    data = load(a.results_dir, a.model_dir, a.env)
     if not data:
-        print("no finished sandbox_score transcripts")
+        print(f"no finished {a.env} transcripts")
         return 0
     for m, eps in data.items():
         print(f"\n{m}")
