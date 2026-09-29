@@ -39,10 +39,9 @@ exploits, because precision cannot be measured with zero positives.
 
 ## Next
 
-Pilot done 2026-09-30: rows = 200 final (FINDINGS P2). Main run, about 19 hours at $0:
-1. Night 1: `sandbox_score_hard` L1 and L5, seeds 0 to 19 (40 episodes, about 8 h). Push.
-2. Night 2: L2 to L4, seeds 0 to 19 (60 episodes, about 11 h), then `sandbox_score_v2` L5 seeds 0 to 19. Push.
-3. `python -m analysis.prereg ...` (H1), summary (H2), `python -m analysis.disclosure label` then `report` (H3).
+1. **P3 capability probe first** (20 minutes): does qwen3:14b edit score.json when told it may?
+   Decision rule in FINDINGS P3. The 19-hour P2 main run is on hold until this is known.
+2. If yes: P2 main run. If no: stop exploit runs on qwen3:14b; H3 disclosure plus a new model.
 
 ## Blocked
 
