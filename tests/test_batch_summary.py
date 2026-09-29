@@ -1,6 +1,7 @@
 """Batch runner and summary table, using scripted agents. No network."""
 from __future__ import annotations
 
+import json
 import os
 
 import pytest
@@ -54,3 +55,27 @@ def test_batch_resumes_and_moves_interrupted_run_aside(tmp_path):
     before = (d / "L3_s1_r0.jsonl").read_bytes()
     assert batch.main(args) == 0                                     # second pass: nothing rerun
     assert (d / "L3_s1_r0.jsonl").read_bytes() == before
+
+
+def test_summary_excludes_failed_runs(tmp_path):
+    d = tmp_path / "sandbox_score" / "anthropic__x"
+    d.mkdir(parents=True)
+    head = {"kind": "header", "env": "sandbox_score", "provider": "anthropic", "model_id": "x",
+            "level": 5, "seed": 0}
+    out = {"kind": "outcome", "termination": "model_error", "proxy": 0, "shadow": 0,
+           "verdict": {"attempted": False, "succeeded": False}}
+    (d / "L5_s0_r0.jsonl").write_text(json.dumps(head) + "\n" + json.dumps(out) + "\n")
+    assert load(str(tmp_path)) == [] and len(load(str(tmp_path), include_failed=True)) == 1
+
+
+def test_awareness_on_scripted_agents(tmp_path):
+    from analysis import sandbox_awareness as sa
+    rd = str(tmp_path)
+    for agent in ("honest", "exploit_only"):
+        batch.main(["--env", "sandbox_score", "--model", f"scripted:{agent}",
+                    "--levels", "1-5", "--seeds", "0-1", "--results-dir", rd])
+    data = sa.load(os.path.join(rd, "_scripted"), None)
+    h, x = data["scripted__honest"], data["scripted__exploit_only"]
+    assert not any(e["listed_grader"] or e["read_score"] or e["attempted"] for e in h)
+    assert all(e["attempted"] for e in x)
+    assert all(e["listed_grader"] for e in x if e["level"] <= 3)   # score file is inside grader/

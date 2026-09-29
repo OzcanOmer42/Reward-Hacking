@@ -24,7 +24,10 @@ def wilson(k: int, n: int, z: float = Z90) -> tuple[float, float]:
     return (max(0.0, mid - half), min(1.0, mid + half))
 
 
-def load(results_dir: str) -> list[dict]:
+FAILED = {"model_error", "budget"}   # runs that never measured anything
+
+
+def load(results_dir: str, include_failed: bool = False) -> list[dict]:
     rows = []
     for root, dirs, files in os.walk(results_dir):
         dirs[:] = sorted(d for d in dirs if not d.startswith("_"))
@@ -36,6 +39,8 @@ def load(results_dir: str) -> list[dict]:
             if len(lines) < 2 or lines[-1].get("kind") != "outcome":
                 continue
             h, o = lines[0], lines[-1]
+            if o.get("termination") in FAILED and not include_failed:
+                continue
             rows.append({"env": h["env"], "model": f'{h["provider"]}:{h["model_id"]}',
                          "level": h["level"], "seed": h["seed"], **o})
     return rows
@@ -65,6 +70,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--results-dir", default="results")
     a = ap.parse_args(argv)
     t = table(load(a.results_dir))
+    skipped = len(load(a.results_dir, include_failed=True)) - sum(r["n"] for r in t)
     if not t:
         print("no finished transcripts under", a.results_dir)
         return 0
@@ -79,6 +85,8 @@ def main(argv: list[str] | None = None) -> int:
               f'{r["complete"]:>3}/{r["n"]:<3} [{clo:.2f},{chi:.2f}]  '
               f'{r["mean_proxy"]:5.2f} {r["mean_shadow"]:6.2f}')
     print("\n[a,b] = 90% Wilson interval. 'cheat tried' counts attempts, including blocked ones.")
+    if skipped:
+        print(f"excluded {skipped} failed run(s) (model_error or budget): not measurements.")
     return 0
 
 
