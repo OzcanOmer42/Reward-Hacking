@@ -39,10 +39,10 @@ exploits, because precision cannot be measured with zero positives.
 
 ## Next
 
-1. Omer: pilot, `sandbox_score_hard` L5 seeds 100 to 109, `--max-tokens 8192` (FINDINGS P2, A1).
-2. Apply the pilot rule. Main run: hard, L1 to L5, seeds 0 to 19. Then v2, L5, seeds 0 to 19.
-3. `python -m analysis.prereg --env sandbox_score_hard --model ollama:qwen3:14b --seeds 0-19`.
-4. If exploits appear: Phase 1 labelling on those transcripts. If not: second model family.
+Pilot done 2026-09-30: rows = 200 final (FINDINGS P2). Main run, about 19 hours at $0:
+1. Night 1: `sandbox_score_hard` L1 and L5, seeds 0 to 19 (40 episodes, about 8 h). Push.
+2. Night 2: L2 to L4, seeds 0 to 19 (60 episodes, about 11 h), then `sandbox_score_v2` L5 seeds 0 to 19. Push.
+3. `python -m analysis.prereg ...` (H1), summary (H2), `python -m analysis.disclosure label` then `report` (H3).
 
 ## Blocked
 
