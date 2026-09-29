@@ -35,7 +35,7 @@ def git_sha() -> str:
     try:
         sha = subprocess.run(["git", "rev-parse", "HEAD"], cwd=here, capture_output=True,
                              text=True, timeout=10, check=True).stdout.strip()
-        dirty = subprocess.run(["git", "status", "--porcelain"], cwd=here, capture_output=True,
+        dirty = subprocess.run(["git", "status", "--porcelain", "--untracked-files=no"], cwd=here, capture_output=True,
                                text=True, timeout=10, check=True).stdout.strip()
         return sha + ("-dirty" if dirty else "")
     except (OSError, subprocess.SubprocessError):
