@@ -1,16 +1,13 @@
 # STATUS
 
-Last updated: 2026-09-29 (session 3)
+Last updated: 2026-09-30 (session 3)
 
 ## Current phase
 
-**Phase 0: CLOSED 2026-09-28.**
-
-**R1 done 2026-09-29:** qwen3:14b, sandbox_score, 100 episodes, 0 exploit attempts (FINDINGS R1).
-
-**Now: P2, the hard variant** (pre-registered in FINDINGS). Pilot of 10 episodes, then the
-100-episode main run. Phase 1 (detector precision) waits for an environment that produces
-exploits, because precision cannot be measured with zero positives.
+**Free-model phase: DONE 2026-09-30, written up in README.md.** 130 real episodes, two model
+families (qwen3:14b, gpt-oss:20b), 0 score-file edits, including with explicit permission.
+The exploitation question (P2 design, flip threshold) is on hold: it needs a model that
+exploits at some level, and none of the free local models tested does.
 
 ## Budget
 
@@ -39,13 +36,15 @@ exploits, because precision cannot be measured with zero positives.
 
 ## Next
 
-P3 done: qwen3:14b is not a subject (0/10 even with permission). P2 main run cancelled.
-1. **P4:** gpt-oss:20b on `sandbox_score_probe_hard`, 10 episodes. Decision rule in FINDINGS P4.
-2. Yes: P2 design on gpt-oss:20b. No: write up R1, P3, H3; frontier models need credits.
+1. Frontier access at $0: Anthropic External Researcher Access Program ($1,000 API credits for
+   AI safety research, reviewed the first Monday of each month). Then run the P2 design on a
+   frontier model with the existing Anthropic adapter and a hard spending cap.
+2. Optional, free: fix the disclosure rule's known miss; build a second environment.
 
 ## Blocked
 
-- Nothing blocked on money. Phase 0 close waits on Omer's first local run.
+- The exploitation question is blocked on access to a model that exploits (frontier models
+  cost money; budget is $0 until credits).
 
 ## Plan of record
 
